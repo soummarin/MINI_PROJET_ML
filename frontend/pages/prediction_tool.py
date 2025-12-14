@@ -407,8 +407,8 @@ def show_prediction_tool():
             
             try:
                 # Call backend
-                response = requests.post("https://mini-projet-mlbackend.onrender.com/predict", 
-                                        json=payload, timeout=10)
+                response = requests.post("https://mini-projet-ml-backend1.onrender.com/predict",
+                        json=payload, timeout=60)  # Augmenté à 60 secondes
                 
                 if response.status_code == 200:
                     result = response.json()
