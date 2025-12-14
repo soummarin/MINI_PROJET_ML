@@ -407,7 +407,7 @@ def show_prediction_tool():
             
             try:
                 # Call backend
-                response = requests.post("http://localhost:5001/predict", 
+                response = requests.post("https://mini-projet-mlbackend.onrender.com/predict", 
                                         json=payload, timeout=10)
                 
                 if response.status_code == 200:
@@ -610,7 +610,7 @@ def show_prediction_tool():
                 **Troubleshooting steps:**
                 1. Make sure the backend is running: `python backend/app.py`
                 2. Check if port 5001 is available
-                3. Verify the server is running at http://localhost:5001
+                3. Verify the server is running at https://mini-projet-mlbackend.onrender.com
                 """)
             except Exception as e:
                 st.error(f"❌ **Error:** {str(e)}")
