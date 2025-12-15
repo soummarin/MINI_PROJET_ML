@@ -196,6 +196,33 @@ def convert_mass_to_interval(mass_grams):
     except:
         return None, "Invalide"
 
+def convert_and_validate_mass(value, unit):
+    """
+    Convertit et valide la masse selon l'unité choisie.
+    Retourne (masse_en_grammes, message_d_erreur)
+    """
+    try:
+        value = float(value)
+        
+        # Conversion en grammes
+        if unit == "g":
+            mass_grams = value
+        else:  # "kg"
+            mass_grams = value * 1000
+        
+        # Validation des limites
+        if mass_grams < 0.001:  # Moins de 0.001g
+            return None, "❌ La masse est trop petite. Minimum: 0.001g"
+        elif mass_grams > 1000000:  # Plus de 1000kg (1,000,000g)
+            return None, "❌ La masse est trop grande. Maximum: 1000kg"
+        elif value <= 0:
+            return None, "❌ La masse doit être supérieure à 0"
+        
+        return mass_grams, None
+        
+    except ValueError:
+        return None, "❌ Veuillez entrer une valeur numérique valide"
+
 def show_prediction_tool():
     st.title("🎯 Advanced Meteorite Prediction Tool")
     
@@ -274,7 +301,6 @@ def show_prediction_tool():
             year_payload = None
             year_display = "AI Predicted"
             year_provided = False
-           
         
         st.markdown("### 🌍 Continent Selection")
         continents = ["", "Africa", "Antarctica", "Asia", "Europe", 
@@ -287,49 +313,108 @@ def show_prediction_tool():
         
         st.markdown("### ⚖️ Mass Input")
         
-        # MODIFICATION 1 & 4: Masse peut être vide (None) OU une valeur numérique
+        # Nouveau : Choix du mode de saisie de la masse
         mass_input_option = st.radio("**Mass Input Mode:**", 
-                                    ["⚖️ Enter exact mass in grams", 
+                                    ["⚖️ Enter exact mass", 
                                      "🤖 Let AI predict mass (leave empty)"], 
                                     horizontal=True)
         
-        if mass_input_option == "⚖️ Enter exact mass in grams":
-            # MODIFICATION 4: Retirer la limite max
-            mass_input = st.number_input(
-                "Enter meteorite mass (grams):", 
-                min_value=0.0, 
-                value=100.0,
-                step=0.1,
-                help="Enter the exact mass in grams. The system will automatically determine the appropriate category."
-            )
+        if mass_input_option == "⚖️ Enter exact mass":
+            # Nouveau : Interface pour choisir l'unité et la valeur
+            col_mass1, col_mass2 = st.columns(2)
             
+            with col_mass1:
+                # Sélecteur d'unité
+                mass_unit = st.selectbox(
+                    "Select unit:",
+                    ["g (grammes)", "kg (kilogrammes)"],
+                    index=0,
+                    help="Choisissez l'unité de mesure pour la masse"
+                )
+                
+                # CORRECTION : Extraire l'unité après avoir défini le selectbox
+                # Utiliser une logique plus simple pour extraire l'unité
+                if mass_unit == "g (grammes)":
+                    unit = "g"
+                else:  # "kg (kilogrammes)"
+                    unit = "kg"
+            
+            with col_mass2:
+                # Définir les paramètres selon l'unité
+                if unit == "g":
+                    min_val = 0.001
+                    max_val = 1000000.0
+                    default_val = 100.0
+                    step_value = 0.001
+                    format_str = "%.3f"
+                    label = "Enter mass (g):"
+                else:  # unit == "kg"
+                    min_val = 0.000001
+                    max_val = 1000.0
+                    default_val = 0.1
+                    step_value = 0.000001
+                    format_str = "%.6f"
+                    label = "Enter mass (kg):"
+                
+                # Afficher le champ numérique avec les bons paramètres
+                mass_input = st.number_input(
+                    label,
+                    min_value=min_val,
+                    max_value=max_val,
+                    value=default_val,
+                    step=step_value,
+                    format=format_str,
+                    help=f"Valeur entre {min_val} et {max_val} {unit}"
+                )
+            
+            # Validation et conversion
             if mass_input > 0:
-                # MODIFICATION 1: Convertir automatiquement la masse en intervalle
-                mass_interval, mass_description = convert_mass_to_interval(mass_input)
-                if mass_interval:
-                    mass_payload = [mass_interval]
-                    mass_display = f"{mass_input}g ({mass_description})"
-                    
-                    mass_provided = True
-                else:
+                # Convertir et valider la masse
+                mass_grams, error_msg = convert_and_validate_mass(mass_input, unit)
+                
+                if error_msg:
+                    st.error(error_msg)
                     mass_payload = []
                     mass_display = "Invalid mass"
                     mass_provided = False
+                elif mass_grams:
+                    # Convertir automatiquement la masse en intervalle
+                    mass_interval, mass_description = convert_mass_to_interval(mass_grams)
+                    if mass_interval:
+                        mass_payload = [mass_interval]
+                        
+                        # Affichage formaté selon l'unité
+                        if unit == "g":
+                            if mass_input >= 1000:
+                                # Afficher aussi en kg si c'est grand
+                                mass_display = f"{mass_input:,.1f}g ({mass_input/1000:.3f}kg) - {mass_description}"
+                            else:
+                                mass_display = f"{mass_input:,.3f}g - {mass_description}"
+                        else:  # kg
+                            if mass_input < 0.001:
+                                # Afficher aussi en g si c'est petit
+                                mass_display = f"{mass_input:,.6f}kg ({mass_input*1000:.3f}g) - {mass_description}"
+                            else:
+                                mass_display = f"{mass_input:,.3f}kg - {mass_description}"
+                        
+                        mass_provided = True
+                    else:
+                        mass_payload = []
+                        mass_display = "Invalid mass"
+                        mass_provided = False
             else:
                 mass_payload = []
                 mass_display = "Not provided"
                 mass_provided = False
                 st.info("💡 **Enter a value > 0 to specify mass**")
+                
         else:  # AI predict
             mass_payload = None
             mass_display = "AI Predicted"
             mass_provided = False
             
-       
-        
         # Advanced options expander
         with st.expander("⚙️ Advanced Options"):
-            # MODIFICATION 3: Retirer le confidence threshold
             st.session_state.max_results = st.slider("Max results to display", 1, 50, 20, 1,
                                                     help="Maximum number of meteorite locations to display")
     
@@ -354,6 +439,30 @@ def show_prediction_tool():
             st.markdown("#### AI will predict:")
             for item in predictions_needed:
                 st.markdown(f"- {item}")
+        
+        # Afficher un guide d'information
+        with st.expander("📋 Mass Input Guide"):
+            st.markdown("""
+            **Plages de masse acceptées:**
+            
+            - **En grammes (g):** 0.001g à 1,000,000g (1000kg)
+            - **En kilogrammes (kg):** 0.000001kg (0.001g) à 1000kg
+            
+            **Exemples:**
+            - Très petite météorite: 0.001g (1 milligramme)
+            - Petite météorite: 10g
+            - Moyenne météorite: 500g
+            - Grande météorite: 5kg (5000g)
+            - Très grande météorite: 100kg (100,000g)
+            
+            **Catégories automatiques:**
+            - < 1g : Très petit
+            - 1-10g : Petit
+            - 10-100g : Moyen
+            - 100g-1kg : Grand
+            - 1-10kg : Très grand
+            - >10kg : Extra large
+            """)
         
         # Prediction button with animation
         predict_clicked = st.button("🚀 **LAUNCH PREDICTION**", 
@@ -402,8 +511,6 @@ def show_prediction_tool():
                 "mass": mass_payload if mass_provided else None,
                 "continents": continent_payload if continent_provided else None
             }
-            
-           
             
             try:
                 # Call backend
@@ -545,6 +652,15 @@ def show_prediction_tool():
                     
                     with summary_cols[2]:
                         if mass_provided:
+                            # Formater l'affichage pour être plus clair
+                            if "g (" in mass_display and "kg" not in mass_display:
+                                # Si c'est en g mais > 1000g, montrer aussi en kg
+                                try:
+                                    mass_value = float(mass_display.split('g')[0].replace(',', ''))
+                                    if mass_value >= 1000:
+                                        mass_display = f"{mass_display} (≈{mass_value/1000:.1f}kg)"
+                                except:
+                                    pass
                             st.markdown(f"**Mass:** {mass_display}")
                         else:
                             predicted_mass = result.get("predicted_mass", ["N/A"])
