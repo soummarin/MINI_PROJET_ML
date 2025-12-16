@@ -26,6 +26,136 @@ COLOR_PALETTE = [
 # Mass intervals mapping
 MASS_INTERVALS = ["<1g", "1-10g", "10-100g", "100-1kg", "1-10kg", ">10kg"]
 
+# Mapping des pays vers leurs continents
+COUNTRY_TO_CONTINENT = {
+    # Africa
+    "Algeria": "Africa", "Angola": "Africa", "Benin": "Africa", "Botswana": "Africa", 
+    "Burkina Faso": "Africa", "Burundi": "Africa", "Cameroon": "Africa", "Cape Verde": "Africa",
+    "Chad": "Africa", "Comoros": "Africa", "Congo": "Africa", "DRC": "Africa", 
+    "Djibouti": "Africa", "Egypt": "Africa", "Eritrea": "Africa", "Eswatini": "Africa",
+    "Ethiopia": "Africa", "Gabon": "Africa", "Gambia": "Africa", "Ghana": "Africa",
+    "Guinea": "Africa", "Guinea-Bissau": "Africa", "Ivory Coast": "Africa", "Kenya": "Africa",
+    "Lesotho": "Africa", "Liberia": "Africa", "Libya": "Africa", "Madagascar": "Africa",
+    "Malawi": "Africa", "Mali": "Africa", "Mauritania": "Africa", "Mauritius": "Africa",
+    "Morocco": "Africa", "Mozambique": "Africa", "Namibia": "Africa", "Niger": "Africa",
+    "Nigeria": "Africa", "Rwanda": "Africa", "Senegal": "Africa", "Seychelles": "Africa",
+    "Sierra Leone": "Africa", "Somalia": "Africa", "Somaliland": "Africa", "South Africa": "Africa",
+    "South Sudan": "Africa", "Sudan": "Africa", "Tanzania": "Africa", "Togo": "Africa",
+    "Tunisia": "Africa", "Uganda": "Africa", "Western Sahara": "Africa", "Zambia": "Africa",
+    "Zimbabwe": "Africa", "Sao Tome and Principe": "Africa",
+    
+    # Antarctica
+    "Antarctica": "Antarctica",
+    
+    # Asia
+    "Afghanistan": "Asia", "Armenia": "Asia", "Azerbaijan": "Asia", "Bahrain": "Asia",
+    "Bangladesh": "Asia", "Bhutan": "Asia", "Brunei": "Asia", "Cambodia": "Asia",
+    "China": "Asia", "Cyprus": "Asia", "Georgia": "Asia", "India": "Asia",
+    "Indonesia": "Asia", "Iran": "Asia", "Iraq": "Asia", "Israel": "Asia",
+    "Japan": "Asia", "Jordan": "Asia", "Kazakhstan": "Asia", "Kuwait": "Asia",
+    "Kyrgyzstan": "Asia", "Laos": "Asia", "Lebanon": "Asia", "Malaysia": "Asia",
+    "Maldives": "Asia", "Mongolia": "Asia", "Myanmar": "Asia", "Nepal": "Asia",
+    "North Korea": "Asia", "Oman": "Asia", "Pakistan": "Asia", "Palestine": "Asia",
+    "Philippines": "Asia", "Qatar": "Asia", "Russia": "Asia", "Saudi Arabia": "Asia",
+    "Singapore": "Asia", "South Korea": "Asia", "Sri Lanka": "Asia", "Syria": "Asia",
+    "Taiwan": "Asia", "Tajikistan": "Asia", "Thailand": "Asia", "Timor-Leste": "Asia",
+    "Turkey": "Asia", "Turkmenistan": "Asia", "United Arab Emirates": "Asia",
+    "Uzbekistan": "Asia", "Vietnam": "Asia", "Yemen": "Asia",
+    
+    # Europe
+    "Albania": "Europe", "Andorra": "Europe", "Austria": "Europe", "Belarus": "Europe",
+    "Belgium": "Europe", "Bosnia and Herzegovina": "Europe", "Bulgaria": "Europe",
+    "Croatia": "Europe", "Czech Republic": "Europe", "Denmark": "Europe", "Estonia": "Europe",
+    "Finland": "Europe", "France": "Europe", "Germany": "Europe", "Greece": "Europe",
+    "Hungary": "Europe", "Iceland": "Europe", "Ireland": "Europe", "Italy": "Europe",
+    "Kosovo": "Europe", "Latvia": "Europe", "Liechtenstein": "Europe", "Lithuania": "Europe",
+    "Luxembourg": "Europe", "Macedonia": "Europe", "Malta": "Europe", "Moldova": "Europe",
+    "Monaco": "Europe", "Montenegro": "Europe", "Netherlands": "Europe", "Norway": "Europe",
+    "Poland": "Europe", "Portugal": "Europe", "Romania": "Europe", "San Marino": "Europe",
+    "Serbia": "Europe", "Slovakia": "Europe", "Slovenia": "Europe", "Spain": "Europe",
+    "Sweden": "Europe", "Switzerland": "Europe", "Ukraine": "Europe", "United Kingdom": "Europe",
+    "Vatican City": "Europe",
+    
+    # North America
+    "Bahamas": "North America", "Barbados": "North America", "Belize": "North America",
+    "Canada": "North America", "Costa Rica": "North America", "Cuba": "North America",
+    "Dominican Republic": "North America", "El Salvador": "North America", "Greenland": "North America",
+    "Guatemala": "North America", "Haiti": "North America", "Honduras": "North America",
+    "Jamaica": "North America", "Mexico": "North America", "Nicaragua": "North America",
+    "Panama": "North America", "Puerto Rico": "North America", "Trinidad and Tobago": "North America",
+    "USA": "North America", "United States": "North America",
+    
+    # Oceania
+    "Australia": "Oceania", "Fiji": "Oceania", "Kiribati": "Oceania", "Micronesia": "Oceania",
+    "New Zealand": "Oceania", "Palau": "Oceania", "Papua New Guinea": "Oceania",
+    "Samoa": "Oceania", "Solomon Islands": "Oceania", "Tonga": "Oceania", "Tuvalu": "Oceania",
+    "Vanuatu": "Oceania",
+    
+    # South America
+    "Argentina": "South America", "Bolivia": "South America", "Brazil": "South America",
+    "Chile": "South America", "Colombia": "South America", "Ecuador": "South America",
+    "Guyana": "South America", "Paraguay": "South America", "Peru": "South America",
+    "Suriname": "South America", "Uruguay": "South America", "Venezuela": "South America"
+}
+
+def get_country_continent(country_name):
+    """Get the continent for a given country"""
+    if not country_name or str(country_name) in ["nan", "None", ""]:
+        return None
+    
+    country_str = str(country_name).strip()
+    
+    # Normalisation des noms de pays
+    country_mapping = {
+        "United States": "USA", "Us": "USA", "Usa": "USA", "United States Of America": "USA",
+        "Democratic Republic Of The Congo": "DRC", "Drc": "DRC", "Congo Drc": "DRC",
+        "Cote D'ivoire": "Ivory Coast", "Côte D'ivoire": "Ivory Coast",
+        "Republic Of Korea": "South Korea", "Korea, South": "South Korea",
+        "Democratic People's Republic Of Korea": "North Korea", "Korea, North": "North Korea",
+        "Uae": "United Arab Emirates", "U.A.E.": "United Arab Emirates", "Emirates": "United Arab Emirates",
+        "Burma": "Myanmar", "Czechia": "Czech Republic", "North Macedonia": "Macedonia",
+        "East Timor": "Timor-Leste", "Swaziland": "Eswatini",
+        "Cote D Ivoire": "Ivory Coast", "Côte D Ivoire": "Ivory Coast",
+        "Palestinian Territories": "Palestine", "Taiwan": "China", "Hong Kong": "China", "Macau": "China"
+    }
+    
+    # Appliquer le mapping
+    normalized = country_str.title()
+    if normalized in country_mapping:
+        normalized = country_mapping[normalized]
+    
+    # Chercher dans le dictionnaire
+    if normalized in COUNTRY_TO_CONTINENT:
+        return COUNTRY_TO_CONTINENT[normalized]
+    
+    # Chercher par similarité
+    for known_country, continent in COUNTRY_TO_CONTINENT.items():
+        if known_country.lower() in country_str.lower() or country_str.lower() in known_country.lower():
+            return continent
+    
+    return None
+
+def filter_countries_by_continent(countries, names, target_continent):
+    """Filter countries and names to only include those in the target continent"""
+    if not target_continent or not countries:
+        return countries, names
+    
+    filtered_countries = []
+    filtered_names = []
+    
+    for i, country in enumerate(countries):
+        country_continent = get_country_continent(country)
+        if country_continent and country_continent.lower() == target_continent.lower():
+            filtered_countries.append(country)
+            if i < len(names):
+                filtered_names.append(names[i])
+    
+    # Si aucun pays trouvé dans le continent, retourner les originaux avec un warning
+    if not filtered_countries:
+        return countries, names
+    
+    return filtered_countries, filtered_names
+
 # Dictionnaire complet des coordonnées des pays
 COUNTRY_COORDINATES = {
     "USA": [37.0902, -95.7129], "Russia": [61.5240, 105.3188], "China": [35.8617, 104.1954],
@@ -196,35 +326,8 @@ def convert_mass_to_interval(mass_grams):
     except:
         return None, "Invalide"
 
-def convert_and_validate_mass(value, unit):
-    """
-    Convertit et valide la masse selon l'unité choisie.
-    Retourne (masse_en_grammes, message_d_erreur)
-    """
-    try:
-        value = float(value)
-        
-        # Conversion en grammes
-        if unit == "g":
-            mass_grams = value
-        else:  # "kg"
-            mass_grams = value * 1000
-        
-        # Validation des limites
-        if mass_grams < 0.001:  # Moins de 0.001g
-            return None, "❌ La masse est trop petite. Minimum: 0.001g"
-        elif mass_grams > 1000000:  # Plus de 1000kg (1,000,000g)
-            return None, "❌ La masse est trop grande. Maximum: 1000kg"
-        elif value <= 0:
-            return None, "❌ La masse doit être supérieure à 0"
-        
-        return mass_grams, None
-        
-    except ValueError:
-        return None, "❌ Veuillez entrer une valeur numérique valide"
-
 def show_prediction_tool():
-    st.title("🎯 Advanced Meteorite Prediction Tool")
+    st.title(" Advanced Meteorite Prediction Tool")
     
     # Introduction with cards
     col_intro1, col_intro2, col_intro3 = st.columns(3)
@@ -264,7 +367,7 @@ def show_prediction_tool():
     col_left, col_right = st.columns([3, 2])
     
     with col_left:
-        st.markdown("### 📅 Year Selection")
+        st.markdown("###  Year Selection")
         
         year_option = st.radio("**Year Input Mode:**", 
                               ["🎯 Provide specific year", 
@@ -301,8 +404,9 @@ def show_prediction_tool():
             year_payload = None
             year_display = "AI Predicted"
             year_provided = False
+           
         
-        st.markdown("### 🌍 Continent Selection")
+        st.markdown("###  Continent Selection")
         continents = ["", "Africa", "Antarctica", "Asia", "Europe", 
                      "North America", "Oceania", "South America"]
         continent = st.selectbox("Select continent:", continents,
@@ -311,142 +415,95 @@ def show_prediction_tool():
         continent_display = continent if continent else "AI Predicted"
         continent_provided = bool(continent)
         
-        st.markdown("### ⚖️ Mass Input")
+        st.markdown("###  Mass Input")
         
-        # Nouveau : Choix du mode de saisie de la masse
+        # MODIFICATION 1 & 4: Masse peut être vide (None) OU une catégorie sélectionnée
         mass_input_option = st.radio("**Mass Input Mode:**", 
-                                    ["⚖️ Enter exact mass", 
+                                    ["⚖️ Enter mass value", 
+                                     "📊 Select mass category",
                                      "🤖 Let AI predict mass (leave empty)"], 
                                     horizontal=True)
         
-        if mass_input_option == "⚖️ Enter exact mass":
-            # Nouveau : Interface pour choisir l'unité et la valeur
-            col_mass1, col_mass2 = st.columns(2)
+        if mass_input_option == "⚖️ Enter mass value":
+            # Sélection de l'unité et de la valeur
+            col_unit, col_value = st.columns([1, 2])
             
-            with col_mass1:
-                # Sélecteur d'unité
+            with col_unit:
                 mass_unit = st.selectbox(
-                    "Select unit:",
-                    ["g (grammes)", "kg (kilogrammes)"],
-                    index=0,
-                    help="Choisissez l'unité de mesure pour la masse"
-                )
-                
-                # CORRECTION : Extraire l'unité après avoir défini le selectbox
-                # Utiliser une logique plus simple pour extraire l'unité
-                if mass_unit == "g (grammes)":
-                    unit = "g"
-                else:  # "kg (kilogrammes)"
-                    unit = "kg"
-            
-            with col_mass2:
-                # Définir les paramètres selon l'unité
-                if unit == "g":
-                    min_val = 0.001
-                    max_val = 1000000.0
-                    default_val = 100.0
-                    step_value = 0.001
-                    format_str = "%.3f"
-                    label = "Enter mass (g):"
-                else:  # unit == "kg"
-                    min_val = 0.000001
-                    max_val = 1000.0
-                    default_val = 0.1
-                    step_value = 0.000001
-                    format_str = "%.6f"
-                    label = "Enter mass (kg):"
-                
-                # Afficher le champ numérique avec les bons paramètres
-                mass_input = st.number_input(
-                    label,
-                    min_value=min_val,
-                    max_value=max_val,
-                    value=default_val,
-                    step=step_value,
-                    format=format_str,
-                    help=f"Valeur entre {min_val} et {max_val} {unit}"
+                    "Unit:",
+                    options=["g", "kg"],
+                    help="Select the unit of mass"
                 )
             
-            # Validation et conversion
-            if mass_input > 0:
-                # Convertir et valider la masse
-                mass_grams, error_msg = convert_and_validate_mass(mass_input, unit)
-                
-                if error_msg:
-                    st.error(error_msg)
-                    mass_payload = []
-                    mass_display = "Invalid mass"
-                    mass_provided = False
-                elif mass_grams:
-                    # Convertir automatiquement la masse en intervalle
-                    mass_interval, mass_description = convert_mass_to_interval(mass_grams)
-                    if mass_interval:
-                        mass_payload = [mass_interval]
-                        
-                        # Affichage formaté selon l'unité
-                        if unit == "g":
-                            if mass_input >= 1000:
-                                # Afficher aussi en kg si c'est grand
-                                mass_display = f"{mass_input:,.1f}g ({mass_input/1000:.3f}kg) - {mass_description}"
-                            else:
-                                mass_display = f"{mass_input:,.3f}g - {mass_description}"
-                        else:  # kg
-                            if mass_input < 0.001:
-                                # Afficher aussi en g si c'est petit
-                                mass_display = f"{mass_input:,.6f}kg ({mass_input*1000:.3f}g) - {mass_description}"
-                            else:
-                                mass_display = f"{mass_input:,.3f}kg - {mass_description}"
-                        
-                        mass_provided = True
-                    else:
-                        mass_payload = []
-                        mass_display = "Invalid mass"
-                        mass_provided = False
+            with col_value:
+                if mass_unit == "g":
+                    mass_value = st.number_input(
+                        "Mass value:",
+                        min_value=0.001,
+                        max_value=1000000.0,
+                        value=100.0,
+                        step=1.0,
+                        format="%.3f",
+                        help="Enter mass in grams (0.001g to 1,000,000g)"
+                    )
+                    mass_in_grams = mass_value
+                else:  # kg
+                    mass_value = st.number_input(
+                        "Mass value:",
+                        min_value=0.000001,
+                        max_value=1000.0,
+                        value=0.1,
+                        step=0.1,
+                        format="%.6f",
+                        help="Enter mass in kilograms (0.000001kg to 1000kg)"
+                    )
+                    mass_in_grams = mass_value * 1000  # Convertir en grammes
+            
+            if mass_in_grams > 0:
+                # Convertir la masse en catégorie d'intervalle
+                mass_interval, mass_category_name = convert_mass_to_interval(mass_in_grams)
+                mass_payload = [mass_interval]
+                mass_display = f"{mass_value:.3f} {mass_unit} → {mass_interval} ({mass_category_name})"
+                mass_provided = True
             else:
-                mass_payload = []
+                mass_payload = None
                 mass_display = "Not provided"
                 mass_provided = False
                 st.info("💡 **Enter a value > 0 to specify mass**")
                 
+        elif mass_input_option == "📊 Select mass category":
+            # Options de catégories de masse
+            mass_categories = {
+                "<1g": "Très petit ",
+                "1-10g": "Petit ",
+                "10-100g": "Moyen ",
+                "100-1kg": "Grand ",
+                "1-10kg": "Très grand ",
+                ">10kg": "Extra large "
+            }
+            
+            selected_mass = st.selectbox(
+                "Select mass category:",
+                options=list(mass_categories.keys()),
+                format_func=lambda x: f"{x} - {mass_categories[x]}",
+                help="Select the mass category for the meteorite."
+            )
+            
+            mass_payload = [selected_mass]
+            mass_display = f"{selected_mass} ({mass_categories[selected_mass]})"
+            mass_provided = True
         else:  # AI predict
             mass_payload = None
             mass_display = "AI Predicted"
             mass_provided = False
-            
-        # Advanced options expander
-        with st.expander("⚙️ Advanced Options"):
-            st.session_state.max_results = st.slider("Max results to display", 1, 50, 20, 1,
-                                                    help="Maximum number of meteorite locations to display")
-    
-    with col_right:
-        st.markdown("### 🎮 Controls")
         
-        # Show what will be predicted
-        st.markdown("### 🔮 What will be predicted?")
-        
-        predictions_needed = []
-        if not mass_provided:
-            predictions_needed.append("📊 **Mass interval**")
-        if not year_provided:
-            predictions_needed.append("📅 **Year**")
-        if not continent_provided:
-            predictions_needed.append("🌍 **Continent**")
-        
-        # Toujours prédire le type
-        predictions_needed.append("🎯 **Meteorite Type**")
-        
-        if predictions_needed:
-            st.markdown("#### AI will predict:")
-            for item in predictions_needed:
-                st.markdown(f"- {item}")
-        
-        # Afficher un guide d'information
+        # Afficher un guide d'information pour la masse
         with st.expander("📋 Mass Input Guide"):
             st.markdown("""
             **Plages de masse acceptées:**
             
-            - **En grammes (g):** 0.001g à 1,000,000g (1000kg)
-            - **En kilogrammes (kg):** 0.000001kg (0.001g) à 1000kg
+            - En grammes (g): 0.001g à 1,000,000g (1000kg)
+            - En kilogrammes (kg): 0.000001kg (0.001g) à 1000kg
             
             **Exemples:**
             - Très petite météorite: 0.001g (1 milligramme)
@@ -463,6 +520,35 @@ def show_prediction_tool():
             - 1-10kg : Très grand
             - >10kg : Extra large
             """)
+       
+        
+        # Advanced options expander
+        with st.expander("⚙️ Advanced Options"):
+            # MODIFICATION 3: Retirer le confidence threshold
+            st.session_state.max_results = st.slider("Max results to display", 1, 50, 20, 1,
+                                                    help="Maximum number of meteorite locations to display")
+    
+    with col_right:
+        st.markdown("###  Controls")
+        
+        # Show what will be predicted
+        st.markdown("### What will be predicted?")
+        
+        predictions_needed = []
+        if not mass_provided:
+            predictions_needed.append("📊 **Mass interval**")
+        if not year_provided:
+            predictions_needed.append("📅 **Year**")
+        if not continent_provided:
+            predictions_needed.append("🌍 **Continent**")
+        
+        # Toujours prédire le type
+        predictions_needed.append("🎯 **Meteorite Type**")
+        
+        if predictions_needed:
+            st.markdown("#### AI will predict:")
+            for item in predictions_needed:
+                st.markdown(f"- {item}")
         
         # Prediction button with animation
         predict_clicked = st.button("🚀 **LAUNCH PREDICTION**", 
@@ -512,10 +598,12 @@ def show_prediction_tool():
                 "continents": continent_payload if continent_provided else None
             }
             
+           
+            
             try:
                 # Call backend
-                response = requests.post("https://mini-projet-ml-backend1.onrender.com/predict",
-                        json=payload, timeout=60)  # Augmenté à 60 secondes
+                response = requests.post("https://mini-projet-ml-backend1.onrender.com/predict", 
+                                        json=payload, timeout=10)
                 
                 if response.status_code == 200:
                     result = response.json()
@@ -525,6 +613,21 @@ def show_prediction_tool():
                     confidence = result.get("probability", 0.0)
                     names = result.get("names", [])
                     countries = result.get("countries", [])
+                    
+                    # Déterminer le continent cible (fourni ou prédit)
+                    target_continent = None
+                    if continent_provided and continent_payload:
+                        target_continent = continent_payload[0]
+                    elif not continent_provided:
+                        predicted_continent = result.get("predicted_continent", [])
+                        if isinstance(predicted_continent, list) and len(predicted_continent) > 0:
+                            target_continent = predicted_continent[0]
+                        elif isinstance(predicted_continent, str):
+                            target_continent = predicted_continent
+                    
+                    # Filtrer les pays et noms par continent
+                    if target_continent and target_continent not in ["Not predicted", "N/A", None, ""]:
+                        countries, names = filter_countries_by_continent(countries, names, target_continent)
                     
                     # MODIFICATION 2: Afficher TOUS les résultats disponibles
                     # Pas de limite, sauf si spécifié dans max_results
@@ -574,7 +677,10 @@ def show_prediction_tool():
                                 "color": country_color
                             })
                     
-                    # Save prediction
+                    # Save prediction with unique color for this prediction
+                    prediction_id = len(st.session_state.predictions) + 1
+                    prediction_color = COLOR_PALETTE[(prediction_id - 1) % len(COLOR_PALETTE)]
+                    
                     prediction_data = {
                         "type": pred_type,
                         "prob": confidence,
@@ -589,7 +695,8 @@ def show_prediction_tool():
                         "names": names[:max_results] if names else [],
                         "sample_years": result.get("sample_years", []),
                         "timestamp": datetime.now().strftime("%H:%M:%S"),
-                        "id": len(st.session_state.predictions) + 1,
+                        "id": prediction_id,
+                        "color": prediction_color,
                         "provided_mass": mass_provided,
                         "provided_year": year_provided,
                         "provided_continent": continent_provided
@@ -630,7 +737,7 @@ def show_prediction_tool():
                         """, unsafe_allow_html=True)
                     
                     # Show input summary
-                    st.markdown("### 📋 Input Summary & AI Predictions")
+                    st.markdown("###  Input Summary & AI Predictions")
                     summary_cols = st.columns(3)
                     
                     with summary_cols[0]:
@@ -652,15 +759,6 @@ def show_prediction_tool():
                     
                     with summary_cols[2]:
                         if mass_provided:
-                            # Formater l'affichage pour être plus clair
-                            if "g (" in mass_display and "kg" not in mass_display:
-                                # Si c'est en g mais > 1000g, montrer aussi en kg
-                                try:
-                                    mass_value = float(mass_display.split('g')[0].replace(',', ''))
-                                    if mass_value >= 1000:
-                                        mass_display = f"{mass_display} (≈{mass_value/1000:.1f}kg)"
-                                except:
-                                    pass
                             st.markdown(f"**Mass:** {mass_display}")
                         else:
                             predicted_mass = result.get("predicted_mass", ["N/A"])
@@ -695,7 +793,7 @@ def show_prediction_tool():
                     
                     # Show sample meteorites
                     if names:
-                        st.markdown(f"### 📄 Sample Meteorites Found ({len(names)} total)")
+                        st.markdown(f"###  Sample Meteorites Found ({len(names)} total)")
                         # Afficher plus de noms
                         sample_names = names[:10]  # Augmenté à 10 noms
                         for i, name in enumerate(sample_names):
@@ -705,7 +803,7 @@ def show_prediction_tool():
                     
                     # Afficher les pays
                     if countries:
-                        st.markdown(f"### 🌍 Countries with Similar Meteorites ({len(countries)} countries)")
+                        st.markdown(f"###  Countries with Similar Meteorites ({len(countries)} countries)")
                         unique_countries = list(set(countries))
                         for i, country in enumerate(unique_countries[:10]):
                             st.markdown(f"📍 {country}")
@@ -726,7 +824,7 @@ def show_prediction_tool():
                 **Troubleshooting steps:**
                 1. Make sure the backend is running: `python backend/app.py`
                 2. Check if port 5001 is available
-                3. Verify the server is running at https://mini-projet-mlbackend.onrender.com
+                3. Verify the server is running at http://localhost:5001
                 """)
             except Exception as e:
                 st.error(f"❌ **Error:** {str(e)}")
@@ -734,114 +832,66 @@ def show_prediction_tool():
     # Display results if we have predictions
     if st.session_state.predictions:
         st.markdown("---")
-        st.markdown("## 🌍 **Interactive Visualization**")
+        st.markdown("##  **Interactive Visualization**")
         
         # Create tabs for different views
-        map_tab, plotly_tab, data_tab, analysis_tab = st.tabs([
-            "🗺️ Folium Map", 
-            "📊 Plotly Map", 
+        map_tab, data_tab, analysis_tab = st.tabs([
+            "🗺️ Map", 
             "📋 Data Table",
             "📈 Analysis"
         ])
         
         with map_tab:
-            # Get the latest prediction
-            latest_pred = st.session_state.predictions[-1]
-            
-            # Create Folium map with dark theme
-            m = folium.Map(location=[20, 0], 
-                          zoom_start=2, 
-                          tiles='CartoDB dark_matter',
-                          control_scale=True)
-            
-            # Add marker cluster
-            marker_cluster = MarkerCluster(name="Meteorite Clusters")
-            
-            # Add markers for latest prediction
-            for loc_idx, loc in enumerate(latest_pred["locations"]):
-                lat, lon = loc.get("latitude"), loc.get("longitude")
-                
-                if lat is not None and lon is not None:
-                    # Create custom HTML popup
-                    popup_html = f"""
-                    <div style="font-family: Arial; min-width: 250px;">
-                        <div style="background: {loc['color']}; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
-                            <h4 style="color: white; margin: 0;">{loc.get('name', 'Meteorite')}</h4>
-                        </div>
-                        <p><strong>📍 Country:</strong> {loc.get('country', 'Unknown')}</p>
-                        <p><strong>🎯 Type:</strong> {latest_pred['type']}</p>
-                        <p><strong>📊 Confidence:</strong> {latest_pred['prob']:.1%}</p>
-                        <hr>
-                        <p style="font-size: 10px; color: #666;">Lat: {lat:.4f}, Lon: {lon:.4f}</p>
-                    </div>
-                    """
-                    
-                    # Create marker with custom icon
-                    marker = folium.Marker(
-                        location=[lat, lon],
-                        popup=folium.Popup(popup_html, max_width=300),
-                        tooltip=f"{loc.get('name')} - {latest_pred['type']} - {loc.get('country')}",
-                        icon=folium.Icon(color='white', icon_color=loc['color'], 
-                                       icon='circle', prefix='fa')
-                    )
-                    
-                    marker.add_to(marker_cluster)
-            
-            # Add cluster to map
-            marker_cluster.add_to(m)
-            
-            # Add layer control
-            folium.LayerControl().add_to(m)
-            
-            # Display the map
-            st_folium(m, width=900, height=500, returned_objects=[])
-        
-        with plotly_tab:
-            # Prepare data for Plotly (latest prediction only)
+            # Prepare data for Plotly (ALL predictions)
             plotly_data = []
-            latest_pred = st.session_state.predictions[-1]
             
-            for loc in latest_pred["locations"]:
-                plotly_data.append({
-                    "Type": latest_pred["type"],
-                    "Confidence": latest_pred["prob"],
-                    "Country": loc.get("country", "Unknown"),
-                    "Latitude": loc.get("latitude"),
-                    "Longitude": loc.get("longitude"),
-                    "Color": loc.get("color", "#CCCCCC"),
-                    "Name": loc.get("name", "Unknown")
-                })
+            for pred_idx, pred in enumerate(st.session_state.predictions):
+                pred_color = pred.get('color', COLOR_PALETTE[pred_idx % len(COLOR_PALETTE)])
+                for loc in pred["locations"]:
+                    plotly_data.append({
+                        "Prediction": f"P#{pred['id']}: {pred['type']}",
+                        "PredictionID": pred['id'],
+                        "Type": pred["type"],
+                        "Confidence": pred["prob"],
+                        "Country": loc.get("country", "Unknown"),
+                        "Latitude": loc.get("latitude"),
+                        "Longitude": loc.get("longitude"),
+                        "Color": pred_color,
+                        "Name": loc.get("name", "Unknown"),
+                        "Timestamp": pred['timestamp']
+                    })
             
             if plotly_data:
                 df_plotly = pd.DataFrame(plotly_data)
                 
-                # Créer un graphique avec couleur par pays
+                # Créer un graphique avec couleur par prédiction
                 fig = go.Figure()
                 
-                # Grouper par pays pour avoir une couleur unique par pays
-                countries = df_plotly['Country'].unique()
-                for country in countries:
-                    df_country = df_plotly[df_plotly['Country'] == country]
-                    color = df_country.iloc[0]['Color']
+                # Grouper par prédiction pour avoir une couleur unique par prédiction
+                predictions = df_plotly['Prediction'].unique()
+                for prediction in predictions:
+                    df_pred = df_plotly[df_plotly['Prediction'] == prediction]
+                    color = df_pred.iloc[0]['Color']
                     
                     fig.add_trace(go.Scattergeo(
-                        lon = df_country['Longitude'],
-                        lat = df_country['Latitude'],
-                        text = df_country['Country'] + '<br>Type: ' + df_country['Type'] + 
-                               '<br>Confidence: ' + (df_country['Confidence'] * 100).round(1).astype(str) + '%',
+                        lon = df_pred['Longitude'],
+                        lat = df_pred['Latitude'],
+                        text = df_pred['Name'] + '<br>Country: ' + df_pred['Country'] + 
+                               '<br>Type: ' + df_pred['Type'] + 
+                               '<br>Confidence: ' + (df_pred['Confidence'] * 100).round(1).astype(str) + '%',
                         mode = 'markers',
                         marker = dict(
-                            size = 15,
+                            size = 12,
                             color = color,
-                            line = dict(width=1, color='white'),
+                            line = dict(width=2, color='white'),
                             opacity = 0.8
                         ),
-                        name = country,
+                        name = prediction,
                         hoverinfo = 'text'
                     ))
                 
                 fig.update_layout(
-                    title = f'🌍 Latest Prediction: {latest_pred["type"]} (Confidence: {latest_pred["prob"]:.1%})',
+                    title = f'🌍 All Predictions ({len(st.session_state.predictions)} total)',
                     geo = dict(
                         showland = True,
                         landcolor = "rgb(40, 40, 40)",
@@ -858,7 +908,7 @@ def show_prediction_tool():
                     template = "plotly_dark",
                     showlegend = True,
                     legend = dict(
-                        title = "Countries",
+                        title = "Predictions",
                         font = dict(size=10),
                         yanchor = "top",
                         y = 0.99,
